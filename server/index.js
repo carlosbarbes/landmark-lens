@@ -7,10 +7,12 @@ const cors = require('cors');
 
 const app = express();
 
+/*
 //Test server
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
+*/
 
 app.use(cors());
 app.use(express.json());
