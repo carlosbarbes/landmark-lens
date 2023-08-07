@@ -17,10 +17,10 @@ const discovery = {
 export default function GoogleAuth() {
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: '997836173651-suke0lm40ksnhkq4qv50e3u883dv1sgq.apps.googleusercontent.com',
+      clientId: '997836173651-v8hfkcnfgd3g7hdjpkcertkssa5qeioo.apps.googleusercontent.com',
       scopes: ['openid', 'profile', 'email'],
       redirectUri: makeRedirectUri({
-        native: 'com.carlosbarbes.landmarklens:/oauth2redirect',
+        native: 'com.googleusercontent.apps.997836173651-v8hfkcnfgd3g7hdjpkcertkssa5qeioo',
         useProxy: false,
       }),
     },

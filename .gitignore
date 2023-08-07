@@ -29,7 +29,11 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+server/.env
 
 # typescript
 *.tsbuildinfo
+
+#others
+server/sampleImages
+client/services

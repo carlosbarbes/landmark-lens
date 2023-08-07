@@ -1,10 +1,12 @@
 
-const axios = require('axios');
 const fs = require('fs');
-const {google} = require('googleapis');
-const encoded = require('./ConvBase64.js')
-
+const axios = require('axios');
+const {google} = require('google-auth-library');
+require('dotenv').config();
 const {GoogleAuth} = require('google-auth-library');
+const path = require('path');
+const Landmark = require('../models/Landmark');
+
 
 module.exports = {
   detect: async (req, res) => {
@@ -18,19 +20,23 @@ module.exports = {
       const client = await auth.getClient();
       const accessToken = (await client.getAccessToken()).token;
 
-      console.log('Access token:', accessToken);
+      // Read the image file and convert it to base64
+      const imageFile = fs.readFileSync(req.file.path);
+      const encodedImage = Buffer.from(imageFile).toString('base64');
 
-      // Set up the request body
+      // Delete the image file after read
+      fs.unlinkSync(req.file.path);
+
       const requestBody = {
         requests: [
           {
             image: {
-              content: encoded
+              content: encodedImage,
             },
             features: [
               {
                 maxResults: 10,
-                type: "LANDMARK_DETECTION"
+                type: "LANDMARK_DETECTION",
               },
             ]
           }
@@ -46,15 +52,80 @@ module.exports = {
       });
 
       // Extract the relevant data from the response
-      const landmarks = visionResponse.data.responses[0].landmarkAnnotations;
+      const landmarks = visionResponse.data.responses[0].landmarkAnnotations || [];
       console.log('Landmarks:', landmarks);
 
-      // Send the landmark data in the response
-      res.send({ landmarks });
+      if (landmarks.length === 0) {
+        return res.status(404).json({ message: "No landmarks found" });
+      }
+
+      // Create a new landmark object
+      const landmark = {
+        description: landmarks[0].description,
+        location: landmarks[0].locations[0].latLng,
+      };
+
+      // Sends the landmarks data only
+      return res.status(200).json({ landmark });
 
     } catch (err) {
       console.error('ERROR:', err);
-      res.status(500).send({ error: err });
+      res.status(500).send();
     }
   },
+
+  saveLandmark: async (req, res) => {
+    try {
+      const landmarkData = JSON.parse(req.body.landmark);
+      const imageFile = req.file;
+
+      const landmark = new Landmark({
+        userId: req.body.userId,
+        listType: req.body.listType,
+        description: landmarkData.description,
+        location: landmarkData.location,
+        image: path.join('uploads', imageFile.filename)
+      });
+
+      console.log(landmark);
+
+      await landmark.save();
+
+      res.status(200).json({ message: 'Landmark saved successfully' });
+    } catch (err) {
+      console.error('ERROR:', err);
+      res.status(500).send();
+    }
+  },
+
+  deleteLandmark: async (req, res) => {
+    try {
+      const landmarkId = req.params.id;
+
+      // 1. Fetching the landmark from the database using its ID.
+      const landmark = await Landmark.getById(landmarkId);
+      if (!landmark) {
+        return res.status(404).json({ error: 'Landmark not found' });
+      } else {console.log(landmarkId);};
+
+      // 2. Getting the image file name/path from the retrieved landmark data.
+      const imagePath = path.join(__dirname, '..', landmark.image); // adjust the path.join arguments if your folder structure is different
+
+      // Check if the file exists
+      if (fs.existsSync(imagePath)) {
+        // Deleting the image using the correct path.
+        fs.unlinkSync(imagePath);
+      } else {
+        console.warn(`File ${imagePath} not found, but continuing with landmark deletion.`);
+      }
+
+      // Deleting the landmark data from the DB.
+      await Landmark.deleteById(landmarkId);
+
+      res.status(200).json({ message: 'Landmark and associated image deleted successfully' });
+    } catch (err) {
+      console.error('ERROR:', err);
+      res.status(500).send();
+    }
+  }
 };

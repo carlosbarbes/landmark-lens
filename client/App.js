@@ -1,63 +1,43 @@
 
 import React from 'react';
-import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import { ResponseType } from 'expo-auth-session';
-import jwtDecode from 'jwt-decode';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/HomeScreen';
+import Header from './components/Header';
+import LandmarkScreen from './screens/LandmarkScreen';
+import ImageViewerScreen from './screens/ImageViewerScreen';
 
-WebBrowser.maybeCompleteAuthSession();
 
-export default function App() {
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
-    {
-      clientId: '997836173651-suke0lm40ksnhkq4qv50e3u883dv1sgq.apps.googleusercontent.com',
-      redirectUri: 'https://auth.expo.io/@carlosbarbes/landmarklens',
-    },
-    {
-      responseType: ResponseType.Token,
-    }
-  );
+const Stack = createStackNavigator();
 
-  React.useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-
-      const decodedToken = jwtDecode(id_token);
-      console.log(decodedToken);
-    }
-  }, [response]);
-
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={() => {
-          promptAsync();
-        }}
-        disabled={!request}
-      >
-        <Text style={styles.buttonText}>Sign in with Google</Text>
-      </TouchableOpacity>
-    </View>
-  );
+function CustomHeader() {
+  return <Header />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleButton: {
-    backgroundColor: '#4285F4',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          header: props => <CustomHeader {...props} />
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+        />
+        <Stack.Screen
+          name="LandmarkScreen"
+          component={LandmarkScreen}
+        />
+        <Stack.Screen
+          name="ImageViewer"
+          component={ImageViewerScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 

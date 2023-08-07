@@ -4,10 +4,11 @@
     "slug": "LandmarkLens",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo_landmark-lens.png",
+    "scheme": "com.googleusercontent.apps.997836173651-v8hfkcnfgd3g7hdjpkcertkssa5qeioo",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo_landmark-lens.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,11 +17,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.carlosbarbes.landmarklens"
+      "bundleIdentifier": "com.carlosbarbes.landmarklens",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "997836173651-v8hfkcnfgd3g7hdjpkcertkssa5qeioo.apps.googleusercontent.com"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo_landmark-lens.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.carlosbarbes.landmarklens"
