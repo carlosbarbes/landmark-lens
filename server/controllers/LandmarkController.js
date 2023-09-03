@@ -1,7 +1,6 @@
 
 const fs = require('fs');
 const axios = require('axios');
-const {google} = require('google-auth-library');
 require('dotenv').config();
 const {GoogleAuth} = require('google-auth-library');
 const path = require('path');
