@@ -67,5 +67,5 @@ To set up the application on your local machine, follow these steps:
 ## Contributors
 
 - Carlos Bárcena Bescansa
-  - [LinkedIn](www.linkedin.com/in/carlos-barcena-bescansa)
+  - [LinkedIn](https://www.linkedin.com/in/carlos-barcena-bescansa/)
   - [GitHub](https://github.com/carlosbarbes)
